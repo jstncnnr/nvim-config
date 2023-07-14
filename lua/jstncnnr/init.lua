@@ -107,6 +107,9 @@ require('lazy').setup({
     },
   },
 
+  -- Code formatting
+  { 'mhartington/formatter.nvim' },
+
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
   {
@@ -517,5 +520,48 @@ cmp.setup {
   },
 }
 
+
+-- [[ Configure formatter.nvim ]]
+vim.keymap.set('n', '<leader>ff', ':Format<CR>', { desc = "[F]ormat the current [F]ile" })
+vim.keymap.set('n', '<leader>fw', ':FormatWrite<CR>', { desc = "[F]ormat the current file and [W]rite to disk" })
+
+local formatterUtil = require("formatter.util")
+function npx_prettier(parser)
+  if not parser then
+    return {
+      exe = "npx",
+      args = {"prettier", "--std-filepath", formatterUtil.escape_path(formatterUtil.get_current_buffer_file_path()),},
+      stdin = true,
+      try_node_modules = true
+    }
+  end
+
+  return {
+    exe = "npx",
+    args = {"prettier", "--std-filepath", formatterUtil.escape_path(formatterUtil.get_current_buffer_file_path()), "--parser", parser,},
+    stdin = true,
+    try_node_modules = true
+  }
+end
+
+require('formatter').setup {
+  logging = true,
+  log_level = vim.log.levels.WARN,
+  filetype = {
+    typescript = {
+      npx_prettier("typescript")
+    },
+    typescriptreact = {
+      npx_prettier("typescript")
+    }
+  }
+}
+
+vim.cmd([[
+  augroup FormatAutogroup
+    autocmd!
+    autocmd BufWritePost * FormatWrite
+  augroup END
+]])
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
