@@ -252,6 +252,9 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Turn off word wrap by default
+vim.o.wrap = false
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
